@@ -15,7 +15,7 @@ router.post("/", async (req, res) => {
 });
 
 router.get("./moveId", async (req, res) => {
-  let moveId = Number(req.params.placeId);
+  let moveId = Number(req.params.moveId);
   if (isNaN(moveId)) {
     res.status(404).json({ message: `Invalid id "${moveId}"` });
   } else {
@@ -26,13 +26,53 @@ router.get("./moveId", async (req, res) => {
       },
     });
     if (!move) {
-      res
-        .status(404)
-        .json({
-          message: `Could not find that move with the id of "${moveId}"`,
-        });
+      res.status(404).json({
+        message: `Could not find that move with the id of "${moveId}"`,
+      });
     } else {
       res.json(move);
     }
   }
 });
+
+router.put("/moveId", async (req, res) => {
+  let moveId = Number(req.params.moveId);
+  if (isNaN(moveId)) {
+    res.status(404).json({ message: `invalid id "${moveId}"` });
+  } else {
+    const move = await Move.findOne({
+      where: { moveId: moveId },
+    });
+    if (!move) {
+      res
+        .status(404)
+        .json({ message: `Could not find move with ID "${moveId}"` });
+    } else {
+      Object.assign(move, req.body);
+      await move.save();
+      res.json(move);
+    }
+  }
+});
+
+router.delete("/moveId", async (req, res) => {
+  let moveId = Number(req.params.moveId);
+  if (isNaN(moveId)) {
+    res.status(404).json({ message: `invalid id "${moveId}"` });
+  } else {
+    const move = await Move.findOne({
+      where: { moveId: moveId },
+    });
+    if (!move) {
+      res
+        .status(404)
+        .json({ message: `Could not find that move with ID "$${moveId}"` });
+    } else {
+      Object.assign(move, req.body);
+      await move.save();
+      res.json(move);
+    }
+  }
+});
+
+router.delete("/");
